@@ -6,9 +6,7 @@ const port = process.env.PORT || 3000
 import PG from 'pg'
 
 const client = new PG.Client({
-	connectionString:
-		process.env.DATABASE_URL ||
-		'postgres://hcklvgsanxtzdt:48e55e4258ceebe092136db6031dff3c6852256cad8e64e9dbb5be7e61b1a9c8@ec2-52-205-45-219.compute-1.amazonaws.com:5432/ddk026cb3as7re',
+	connectionString: process.env.DATABASE_URL,
 	ssl: {
 		rejectUnauthorized: false,
 	},
