@@ -6,8 +6,7 @@ const port = process.env.PORT || 3000
 import PG from 'pg'
 
 const client = new PG.Client({
-	connectionString:
-		process.env.DATABASE_URL,
+	connectionString: process.env.DATABASE_URL,
 	ssl: {
 		rejectUnauthorized: false,
 	},
@@ -18,15 +17,14 @@ const client = new PG.Client({
 	console.log('database connected')
 
 	app.get('/', async (req, res) => {
-		// try {
-		// 	const dbResponse = await client.query(
-		// 		'SELECT * FROM public."Test" ORDER BY id DESC LIMIT 1',
-		// 	)
-		// 	res.send(dbResponse.rows)
-		// } catch (e) {
-		// 	res.send(e)
-		// }
-        res.send("Hello!")
+		try {
+			const dbResponse = await client.query(
+				'SELECT * FROM public."Test" ORDER BY id DESC LIMIT 1',
+			)
+			res.send(dbResponse.rows)
+		} catch (e) {
+			res.send(e)
+		}
 	})
 
 	app.get('/get-all', async (req, res) => {
