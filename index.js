@@ -6,7 +6,9 @@ const port = process.env.PORT || 3000
 import PG from 'pg'
 
 const client = new PG.Client({
-	connectionString: process.env.DATABASE_URL,
+	connectionString:
+		process.env.DATABASE_URL ||
+		'postgres://hcklvgsanxtzdt:48e55e4258ceebe092136db6031dff3c6852256cad8e64e9dbb5be7e61b1a9c8@ec2-52-205-45-219.compute-1.amazonaws.com:5432/ddk026cb3as7re',
 	ssl: {
 		rejectUnauthorized: false,
 	},
@@ -21,7 +23,11 @@ const client = new PG.Client({
 			const dbResponse = await client.query(
 				'SELECT * FROM public."Test" ORDER BY id DESC LIMIT 1',
 			)
-			res.send(dbResponse.rows)
+			if (dbResponse.rows[0]) {
+				res.json(JSON.parse(dbResponse.rows[0].record))
+			} else {
+				res.send('No record was added yet, please call PUT to do so.')
+			}
 		} catch (e) {
 			res.send(e)
 		}
@@ -32,7 +38,12 @@ const client = new PG.Client({
 			const dbResponse = await client.query(
 				'SELECT * FROM public."Test" ORDER BY id DESC',
 			)
-			res.send(dbResponse.rows)
+			const responseMapped = dbResponse.rows.map(row => {
+				const newRow = { ...row }
+				newRow.record = JSON.parse(newRow.record)
+				return newRow
+			})
+			res.json(responseMapped)
 		} catch (e) {
 			res.send(e)
 		}
@@ -46,7 +57,16 @@ const client = new PG.Client({
             VALUES ($1);`,
 				[JSON.stringify(req.body)],
 			)
-			res.send(dbResponse)
+			res.send('data saved')
+		} catch (e) {
+			res.send(e)
+		}
+	})
+
+	app.delete('/really-clean-all-records-without-backup', async (req, res) => {
+		try {
+			const dbResponse = await client.query(`DELETE FROM public."Test"`)
+			res.send('all deleted')
 		} catch (e) {
 			res.send(e)
 		}
