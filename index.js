@@ -2,7 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 const app = express()
 app.use(bodyParser.json())
-const port = 3000
+const port = process.env.PORT | 3000
 import PG from 'pg'
 
 const client = new PG.Client({
