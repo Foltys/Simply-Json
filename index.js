@@ -26,21 +26,21 @@ const client = new PG.Client({
 
 	const getJsonById = async id => {
 		const record = await client.query(
-			`SELECT * FROM public."${table}" WHERE json_id = $1 ORDER BY id DESC LIMIT 1`,
+			`SELECT * FROM public."${table}" WHERE id = $1 ORDER BY id DESC LIMIT 1`,
 			[id],
 		)
 		assert(
 			record.rows[0],
 			'No data saved with this id yet, first save some using PUT method.',
 		)
-		return record.rows[0]
+		return record.rows[0].data
 	}
 
 	app.get('/', async (req, res, next) => {
 		try {
 			assert(req.query.id, 'You are missing id in the query')
 			const latestSave = await getJsonById(req.query.id)
-			res.json(JSON.parse(latestSave.record))
+			res.json(JSON.parse(latestSave))
 		} catch (e) {
 			next(e)
 		}
@@ -50,7 +50,7 @@ const client = new PG.Client({
 		try {
 			assert(req.query.id, 'You are missing id in the query')
 			const dbResponse = await client.query(
-				`SELECT * FROM public."${table}" WHERE json_id = $1 ORDER BY id DESC`,
+				`SELECT * FROM public."${table}" WHERE id = $1 ORDER BY id DESC`,
 				[req.query.id],
 			)
 			if (!dbResponse.rowCount) {
@@ -60,7 +60,7 @@ const client = new PG.Client({
 			}
 			const responseMapped = dbResponse.rows.map(row => {
 				const newRow = { ...row }
-				newRow.record = JSON.parse(newRow.record)
+				newRow.data = JSON.parse(newRow.data)
 				return newRow
 			})
 			res.json(responseMapped)
@@ -73,15 +73,15 @@ const client = new PG.Client({
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
-				`INSERT INTO public."${table}"(json_id,record)
+				`INSERT INTO public."${table}"(id,data)
             VALUES ($1, $2);`,
 				[req.query.id, JSON.stringify(req.body)],
 			)
 			if (!dbResponse.rowCount) {
 				next('No records saved for some unexpected reason, please try again.')
 			}
-			const lastSavedRecord = await getJsonById(req.query.id)
-			res.send(JSON.parse(lastSavedRecord.record))
+			const latestSave = await getJsonById(req.query.id)
+			res.send(JSON.parse(latestSave))
 		} catch (e) {
 			next(e)
 		}
