@@ -1,8 +1,16 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import express from 'express'
 import bodyParser from 'body-parser'
+import assert from 'assert'
+
+//idcka +
 const app = express()
 app.use(bodyParser.json())
+
 const port = process.env.PORT || 3000
+const table = process.env.TABLE || 'JSONS'
 import PG from 'pg'
 
 const client = new PG.Client({
@@ -16,26 +24,40 @@ const client = new PG.Client({
 	await client.connect()
 	console.log('database connected')
 
-	app.get('/', async (req, res) => {
+	const getJsonById = async id => {
+		const record = await client.query(
+			`SELECT * FROM public."${table}" WHERE json_id = $1 ORDER BY id DESC LIMIT 1`,
+			[id],
+		)
+		assert(
+			record.rows[0],
+			'No data saved with this id yet, first save some using PUT method.',
+		)
+		return record.rows[0]
+	}
+
+	app.get('/', async (req, res, next) => {
 		try {
-			const dbResponse = await client.query(
-				'SELECT * FROM public."Test" ORDER BY id DESC LIMIT 1',
-			)
-			if (dbResponse.rows[0]) {
-				res.json(JSON.parse(dbResponse.rows[0].record))
-			} else {
-				res.send('No record was added yet, please call PUT to do so.')
-			}
+			assert(req.query.id, 'You are missing id in the query')
+			const latestSave = await getJsonById(req.query.id)
+			res.json(JSON.parse(latestSave.record))
 		} catch (e) {
-			res.send(e)
+			next(e)
 		}
 	})
 
-	app.get('/get-all', async (req, res) => {
+	app.get('/get-all', async (req, res, next) => {
 		try {
+			assert(req.query.id, 'You are missing id in the query')
 			const dbResponse = await client.query(
-				'SELECT * FROM public."Test" ORDER BY id DESC',
+				`SELECT * FROM public."${table}" WHERE json_id = $1 ORDER BY id DESC`,
+				[req.query.id],
 			)
+			if (!dbResponse.rowCount) {
+				next(
+					'No data saved with this id yet, first save some using PUT method.',
+				)
+			}
 			const responseMapped = dbResponse.rows.map(row => {
 				const newRow = { ...row }
 				newRow.record = JSON.parse(newRow.record)
@@ -43,31 +65,49 @@ const client = new PG.Client({
 			})
 			res.json(responseMapped)
 		} catch (e) {
-			res.send(e)
+			next(e)
 		}
 	})
 
-	app.put('/', async (req, res) => {
+	app.put('/', async (req, res, next) => {
 		try {
+			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
-				`INSERT INTO public."Test"(
-            record)
-            VALUES ($1);`,
-				[JSON.stringify(req.body)],
+				`INSERT INTO public."${table}"(json_id,record)
+            VALUES ($1, $2);`,
+				[req.query.id, JSON.stringify(req.body)],
 			)
-			res.send('data saved')
+			if (!dbResponse.rowCount) {
+				next('No records saved for some unexpected reason, please try again.')
+			}
+			const lastSavedRecord = await getJsonById(req.query.id)
+			res.send(JSON.parse(lastSavedRecord.record))
 		} catch (e) {
-			res.send(e)
+			next(e)
 		}
 	})
 
-	app.delete('/really-clean-all-records-without-backup', async (req, res) => {
-		try {
-			const dbResponse = await client.query(`DELETE FROM public."Test"`)
-			res.send('all deleted')
-		} catch (e) {
-			res.send(e)
-		}
+	app.delete(
+		'/really-clean-all-records-without-backup',
+		async (_req, res, next) => {
+			try {
+				const dbResponse = await client.query(
+					`DELETE FROM public."${table}"; ALTER SEQUENCE public."${table}_id_seq" RESTART WITH 1;`,
+				)
+				res.send({
+					deletedRows: dbResponse.find(item => {
+						return item.command == 'DELETE'
+					}).rowCount,
+				})
+			} catch (e) {
+				next(e)
+			}
+		},
+	)
+
+	//all error handling
+	app.use(function (err, req, res, next) {
+		res.status(err.status || 500).send({ error: err.message || err })
 	})
 
 	app.listen(port, () => {
