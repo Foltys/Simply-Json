@@ -12,7 +12,8 @@ app.use(bodyParser.json())
 
 const corsOptions = {
 	origin: '*',
-	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS']
+	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS'],
+	
 }
 
 app.use(cors(corsOptions))
@@ -77,7 +78,7 @@ const client = new PG.Client({
 		}
 	})
 
-	app.put('/', async (req, res, next) => {
+	app.put('/', cors(corsOptions), async (req, res, next) => {
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
