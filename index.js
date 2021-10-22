@@ -11,7 +11,8 @@ const app = express()
 app.use(bodyParser.json())
 
 const corsOptions = {
-	methods: ['GET', 'DELETE', 'PUT']
+	origin: '*',
+	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS']
 }
 
 app.use(cors(corsOptions))
