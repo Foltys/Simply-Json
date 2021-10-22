@@ -9,7 +9,12 @@ import cors from 'cors'
 //idcka +
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+
+const corsOptions = {
+	methods: ['GET', 'DELETE', 'PUT']
+}
+
+app.use(cors(corsOptions))
 
 const port = process.env.PORT || 3000
 const table = process.env.TABLE || 'JSONS'
