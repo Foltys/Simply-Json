@@ -101,6 +101,7 @@ const client = new PG.Client({
 		// console.log('at least got here')
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
+			JSON.parse(req.body)
 			const dbResponse = await client.query(
 				`INSERT INTO public."${table}"(id,data)
             VALUES ($1, $2);`,
