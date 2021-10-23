@@ -11,7 +11,7 @@ const app = express()
 app.use(bodyParser.json())
 
 const corsOptions = {
-	origin: 'http://cfc.aspone.cz/',
+	origin: ['http://cfc.aspone.cz/'],
 	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS'],
 	allowedHeaders: ['Content-Type']
 	
