@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 	res.set({
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE',
-		'Access-Control-Allow-Headers': 'Content-Type'
+		'Access-Control-Allow-Headers': 'Content-Type,Accept,Accept-Encoding,Accept-Language,Connection,Content-Length,Origin'
 	})
 	next()
 })
