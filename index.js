@@ -17,7 +17,16 @@ const corsOptions = {
 	
 }
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
+app.use((req, res, next) => {
+	res.set({
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE',
+		'Access-Control-Allow-Headers': 'Content-Type'
+	})
+	next()
+})
+
 
 const port = process.env.PORT || 3000
 const table = process.env.TABLE || 'JSONS'
@@ -91,6 +100,7 @@ const client = new PG.Client({
 				next('No records saved for some unexpected reason, please try again.')
 			}
 			const latestSave = await getJsonById(req.query.id)
+			
 			res.send(JSON.parse(latestSave))
 		} catch (e) {
 			next(e)
