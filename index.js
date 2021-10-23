@@ -20,7 +20,7 @@ const corsOptions = {
 // app.use(cors(corsOptions))
 app.use((req, res, next) => {
 	res.set({
-		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Origin': 'http://cfc.aspone.cz',
 		'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE',
 		'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json'
 	})
