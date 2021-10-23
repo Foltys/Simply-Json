@@ -13,7 +13,7 @@ app.use(bodyParser.json())
 const corsOptions = {
 	origin: '*',
 	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS'],
-	allow_headers: ['Content-Type']
+	allowedHeaders: ['Content-Type']
 	
 }
 
