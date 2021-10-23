@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 	res.set({
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE',
-		'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,Allow,content-type,application/json'
+		'Access-Control-Allow-Headers': 'Content-type'
 	})
 	next()
 })
@@ -97,11 +97,6 @@ const client = new PG.Client({
 	app.put('/', async (req, res, next) => {
 		console.log(req.headers)
 		console.log('at least got here')
-		res.set({
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE',
-			'Access-Control-Allow-Headers': 'Content-type'
-		})
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
