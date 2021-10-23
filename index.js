@@ -10,6 +10,7 @@ import cors from 'cors'
 const app = express()
 // app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.json())
+app.use(express.text())
 // app.use(bodyParser.)
 
 // const corsOptions = {
@@ -96,14 +97,14 @@ const client = new PG.Client({
 	})
 
 	app.put('/', async (req, res, next) => {
-		console.log(req.headers)
-		console.log('at least got here')
+		// console.log(req.headers)
+		// console.log('at least got here')
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
 				`INSERT INTO public."${table}"(id,data)
             VALUES ($1, $2);`,
-				[req.query.id, JSON.stringify(req.body)],
+				[req.query.id, req.body],
 			)
 			if (!dbResponse.rowCount) {
 				next('No records saved for some unexpected reason, please try again.')
