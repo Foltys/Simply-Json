@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 	res.set({
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE',
-		'Access-Control-Allow-Headers': 'Content-Type,Accept,Accept-Encoding,Accept-Language,Connection,Content-Length,Origin'
+		'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json'
 	})
 	next()
 })
@@ -101,7 +101,7 @@ const client = new PG.Client({
 			}
 			const latestSave = await getJsonById(req.query.id)
 			
-			res.send(JSON.parse(latestSave))
+			res.json(JSON.parse(latestSave))
 		} catch (e) {
 			next(e)
 		}
