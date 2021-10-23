@@ -100,7 +100,7 @@ const client = new PG.Client({
 		res.set({
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE',
-			'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,Allow,content-type,application/json'
+			'Access-Control-Allow-Headers': 'Content-type'
 		})
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
