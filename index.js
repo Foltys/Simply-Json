@@ -88,7 +88,7 @@ const client = new PG.Client({
 		}
 	})
 
-	app.put('/', cors(corsOptions), async (req, res, next) => {
+	app.post('/', cors(corsOptions), async (req, res, next) => {
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
