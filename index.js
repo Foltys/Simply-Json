@@ -8,21 +8,23 @@ import cors from 'cors'
 
 //idcka +
 const app = express()
-app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({extended: true}))
+app.use(express.json())
+// app.use(bodyParser.)
 
-const corsOptions = {
-	origin: ['http://cfc.aspone.cz/'],
-	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS'],
-	allowedHeaders: ['Content-Type']
+// const corsOptions = {
+// 	origin: ['http://cfc.aspone.cz/'],
+// 	methods: ['GET', 'DELETE', 'PUT', 'OPTIONS'],
+// 	allowedHeaders: ['Content-Type']
 	
-}
+// }
 
 // app.use(cors(corsOptions))
 app.use((req, res, next) => {
 	res.set({
-		'Access-Control-Allow-Origin': 'http://cfc.aspone.cz',
-		'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE',
-		'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json'
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE',
+		'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,Allow,content-type,application/json'
 	})
 	next()
 })
@@ -55,11 +57,15 @@ const client = new PG.Client({
 		return record.rows[0].data
 	}
 
+
+	// app.options('/')
+
 	app.get('/', async (req, res, next) => {
 		try {
 			assert(req.query.id, 'You are missing id in the query')
 			const latestSave = await getJsonById(req.query.id)
-			res.json(JSON.parse(latestSave))
+			res.send(latestSave)
+			// res.json(JSON.parse(latestSave))
 		} catch (e) {
 			next(e)
 		}
@@ -88,7 +94,7 @@ const client = new PG.Client({
 		}
 	})
 
-	app.get('/save', async (req, res, next) => {
+	app.put('/', async (req, res, next) => {
 		try {
 			assert(req.query.id, 'You are missing id in the query.')
 			const dbResponse = await client.query(
