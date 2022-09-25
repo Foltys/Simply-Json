@@ -118,24 +118,6 @@ const client = new PG.Client({
 		}
 	})
 
-	app.delete(
-		'/really-clean-all-records-without-backup',
-		async (_req, res, next) => {
-			try {
-				const dbResponse = await client.query(
-					`DELETE FROM public."${table}"; ALTER SEQUENCE public."${table}_id_seq" RESTART WITH 1;`,
-				)
-				res.send({
-					deletedRows: dbResponse.find(item => {
-						return item.command == 'DELETE'
-					}).rowCount,
-				})
-			} catch (e) {
-				next(e)
-			}
-		},
-	)
-
 	//all error handling
 	app.use(function (err, req, res, next) {
 		res.status(err.status || 500).send({ error: err.message || err })
