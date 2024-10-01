@@ -83,4 +83,4 @@ jobs:
         run: |
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart app
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl res
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart nginx

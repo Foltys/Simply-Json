@@ -37,9 +37,6 @@ import PG from "pg";
 
 const client = new PG.Client({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
 });
 
 (async () => {
@@ -64,7 +61,7 @@ const client = new PG.Client({
     try {
       assert(req.query.id, "You are missing id in the query");
       const latestSave = await getJsonById(req.query.id);
-      res.send(latestSave);
+      res.status(200).send(latestSave);
       // res.json(JSON.parse(latestSave))
     } catch (e) {
       next(e);
