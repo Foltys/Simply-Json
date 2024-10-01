@@ -1,8 +1,9 @@
 name: Deploy into Roští.cz
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
