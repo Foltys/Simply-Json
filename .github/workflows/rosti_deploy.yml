@@ -29,8 +29,7 @@ jobs:
       - name: env
         run: |
           cat << EOF > .env
-          DATABASE_URL=${{ secrets.ROSTI_DATABASE_URL }}
-          TABLE=${{ secrets.TABLE }}
+          DATABASE_URL=${{ secrets.PG }}
           EOF
       - name: Dependencies
         run: |
