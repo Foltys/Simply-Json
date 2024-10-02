@@ -45,7 +45,7 @@ const client = new PG.Client({
 
   const getJsonById = async (id) => {
     const record = await client.query(
-      `SELECT * FROM "${table}" WHERE id = $1 ORDER BY index DESC LIMIT 1`,
+      `SELECT * FROM ${schema}."${table}" WHERE id = $1 ORDER BY index DESC LIMIT 1`,
       [id]
     );
     assert(
@@ -102,7 +102,7 @@ const client = new PG.Client({
       if (!dbResponse.rowCount) {
         next("No records saved for some unexpected reason, please try again.");
       }
-      const latestSave = await getJsonById(req.query.id);
+      const latestSave = await getJsonById(req.params.id);
 
       res.json(JSON.parse(latestSave));
     } catch (e) {
