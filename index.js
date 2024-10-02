@@ -31,7 +31,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const port = 3000;
+const port = 8000;
 const table = "JSONS";
 import PG from "pg";
 
@@ -96,7 +96,6 @@ const client = new PG.Client({
     // console.log('at least got here')
     try {
       assert(req.query.id, "You are missing id in the query.");
-      JSON.parse(req.body);
       const dbResponse = await client.query(
         `INSERT INTO public."${table}"(id,data)
             VALUES ($1, $2);`,
