@@ -3,9 +3,6 @@ dotenv.config();
 import PG from "pg";
 const client = PG.Client({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
 });
 
 (async () => {

@@ -45,7 +45,7 @@ const client = new PG.Client({
 
   const getJsonById = async (id) => {
     const record = await client.query(
-      `SELECT * FROM public."${table}" WHERE id = $1 ORDER BY index DESC LIMIT 1`,
+      `SELECT * FROM "${table}" WHERE id = $1 ORDER BY index DESC LIMIT 1`,
       [id]
     );
     assert(
