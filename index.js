@@ -33,6 +33,7 @@ app.use((req, res, next) => {
 
 const port = 3000;
 const table = "JSONS";
+const schema = "jf01emailcz_2893";
 import PG from "pg";
 
 const client = new PG.Client({
@@ -57,22 +58,22 @@ const client = new PG.Client({
 
   // app.options('/')
 
-  app.get("/", async (req, res, next) => {
+  app.get("/latest/:id", async (req, res, next) => {
     try {
       assert(req.query.id, "You are missing id in the query");
       const latestSave = await getJsonById(req.query.id);
-      res.status(200).send(latestSave);
+      res.send(latestSave);
       // res.json(JSON.parse(latestSave))
     } catch (e) {
       next(e);
     }
   });
 
-  app.get("/get-all", async (req, res, next) => {
+  app.get("/all/:id", async (req, res, next) => {
     try {
-      assert(req.query.id, "You are missing id in the query");
+      assert(req.params.id, "You are missing id in the query");
       const dbResponse = await client.query(
-        `SELECT * FROM public."${table}" WHERE id = $1 ORDER BY index DESC`,
+        `SELECT * FROM ${schema}."${table}" WHERE id = $1 ORDER BY index DESC`,
         [req.query.id]
       );
       if (!dbResponse.rowCount) {
@@ -97,7 +98,7 @@ const client = new PG.Client({
     try {
       assert(req.query.id, "You are missing id in the query.");
       const dbResponse = await client.query(
-        `INSERT INTO public."${table}"(id,data)
+        `INSERT INTO ${schema}."${table}"(id,data)
             VALUES ($1, $2);`,
         [req.query.id, req.body]
       );
@@ -110,6 +111,10 @@ const client = new PG.Client({
     } catch (e) {
       next(e);
     }
+  });
+
+  app.get("/", (req, res) => {
+    res.status(200);
   });
 
   //all error handling
