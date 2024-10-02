@@ -31,7 +31,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const port = 8000;
+const port = 3000;
 const table = "JSONS";
 import PG from "pg";
 
