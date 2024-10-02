@@ -42,7 +42,6 @@ const client = new PG.Client({
 
 (async () => {
   await client.connect();
-  console.log("database connected");
 
   const getJsonById = async (id) => {
     const record = await client.query(
@@ -60,8 +59,8 @@ const client = new PG.Client({
 
   app.get("/latest/:id", async (req, res, next) => {
     try {
-      assert(req.query.id, "You are missing id in the query");
-      const latestSave = await getJsonById(req.query.id);
+      assert(req.params.id, "You are missing id in the query");
+      const latestSave = await getJsonById(req.params.id);
       res.send(latestSave);
       // res.json(JSON.parse(latestSave))
     } catch (e) {
@@ -74,7 +73,7 @@ const client = new PG.Client({
       assert(req.params.id, "You are missing id in the query");
       const dbResponse = await client.query(
         `SELECT * FROM ${schema}."${table}" WHERE id = $1 ORDER BY index DESC`,
-        [req.query.id]
+        [req.params.id]
       );
       if (!dbResponse.rowCount) {
         next(
@@ -92,15 +91,13 @@ const client = new PG.Client({
     }
   });
 
-  app.put("/", async (req, res, next) => {
-    // console.log(req.headers)
-    // console.log('at least got here')
+  app.put("/:id", async (req, res, next) => {
     try {
-      assert(req.query.id, "You are missing id in the query.");
+      assert(req.params.id, "You are missing id in the query.");
       const dbResponse = await client.query(
         `INSERT INTO ${schema}."${table}"(id,data)
             VALUES ($1, $2);`,
-        [req.query.id, req.body]
+        [req.params.id, req.body]
       );
       if (!dbResponse.rowCount) {
         next("No records saved for some unexpected reason, please try again.");
